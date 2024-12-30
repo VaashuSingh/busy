@@ -1,4 +1,6 @@
-const DynamicTable = () => {
+import DynamicTable from "../../utils/DynamicTable";
+
+const DynamicAgTable = () => {
   const columns = [
     { field: "name", headerName: "Name" },
     { field: "age", headerName: "Age" },
@@ -19,4 +21,4 @@ const DynamicTable = () => {
   );
 };
 
-export default DynamicTable;
+export default DynamicAgTable;

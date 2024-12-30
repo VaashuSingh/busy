@@ -3,7 +3,9 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
+// eslint-disable-next-line react/prop-types
 const DynamicTable = ({ columnDefs, rowData }) => {
+  // eslint-disable-next-line no-unused-vars
   const [gridApi, setGridApi] = useState(null);
 
   const onGridReady = (params) => {
@@ -43,4 +45,4 @@ const DynamicTable = ({ columnDefs, rowData }) => {
   );
 };
 
-
+export default DynamicTable;
