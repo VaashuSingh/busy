@@ -1,88 +1,78 @@
 import "./Table.css";
+
 import { useState, useRef } from "react";
 
 const EditableTable = () => {
   const [data, setData] = useState([
-    { name: "John", age: 30, initial: "J" },
-    { name: "Jane", age: 25, initial: "A" },
+    { sn: 1, item: "test1", qty: 100, unit: "pcs", price: 10, amount: 1000 },
+    { sn: 2, item: "test2", qty: 200, unit: "pcs", price: 20, amount: 2000 },
+    { sn: 3, item: "test3", qty: 300, unit: "pcs", price: 30, amount: 3000 },
+    { sn: 4, item: "test4", qty: 400, unit: "pcs", price: 40, amount: 4000 },
+    { sn: 5, item: "test5", qty: 500, unit: "pcs", price: 50, amount: 5000 },
+    { sn: 6, item: "test6", qty: 600, unit: "pcs", price: 60, amount: 6000 },
   ]);
 
-  const [editingCell, setEditingCell] = useState(null);
-  const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef(null);
+  const [editingCell, setEditingCell] = useState(null); // Tracks the cell being edited
+  const inputRef = useRef(null); // For input focus
 
-  const handleCellDoubleClick = (rowIndex, colKey, value) => {
+  const handleCellClick = (rowIndex, colKey) => {
     setEditingCell({ rowIndex, colKey });
-    setInputValue(value);
-    setTimeout(() => inputRef.current.focus(), 0); // Focus on input
+    setTimeout(() => inputRef.current && inputRef.current.focus(), 0);
   };
 
   const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+    const { value } = e.target;
+    setData((prevData) => {
+      const updatedData = [...prevData];
+      updatedData[editingCell.rowIndex][editingCell.colKey] = value;
+      return updatedData;
+    });
   };
 
   const saveEdit = () => {
-    if (editingCell) {
-      const { rowIndex, colKey } = editingCell;
-      const updatedData = [...data];
-      const cellType =
-        colKey === "age"
-          ? "number"
-          : colKey === "initial"
-          ? "single"
-          : "string";
-
-      // Validate input
-      if (cellType === "number" && isNaN(inputValue)) {
-        alert("Please enter a valid number!");
-        return;
-      }
-      if (cellType === "single" && inputValue.length > 1) {
-        alert("Please enter a single character!");
-        return;
-      }
-
-      updatedData[rowIndex][colKey] =
-        colKey === "age" ? Number(inputValue) : inputValue;
-      setData(updatedData);
-      setEditingCell(null);
-    }
+    setEditingCell(null); // Exit edit mode
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       saveEdit();
 
-      // Move to the next cell
+      // Navigate to the next cell
       const { rowIndex, colKey } = editingCell;
       const columnKeys = Object.keys(data[0]);
       const nextColIndex = columnKeys.indexOf(colKey) + 1;
 
       if (nextColIndex < columnKeys.length) {
-        handleCellDoubleClick(
-          rowIndex,
-          columnKeys[nextColIndex],
-          data[rowIndex][columnKeys[nextColIndex]]
-        );
+        handleCellClick(rowIndex, columnKeys[nextColIndex]);
       } else if (rowIndex + 1 < data.length) {
-        handleCellDoubleClick(
-          rowIndex + 1,
-          columnKeys[0],
-          data[rowIndex + 1][columnKeys[0]]
-        );
+        handleCellClick(rowIndex + 1, columnKeys[0]);
       }
     }
   };
 
+  const getCellStyle = (rowIndex, colKey) => {
+    if (
+      editingCell &&
+      editingCell.rowIndex === rowIndex &&
+      editingCell.colKey === colKey
+    ) {
+      return { backgroundColor: "#f0f8ff", cursor: "text" }; // Highlight style
+    }
+    return { cursor: "pointer" };
+  };
+
   return (
     <div>
-      <h1>Editable Table with React</h1>
+      <h1>Editable Table</h1>
       <table border="1" cellPadding="10" cellSpacing="0">
-        <thead>
+        <thead style={{ background: "gray" }}>
           <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Initial</th>
+            <th style={{ background: "gray" }}>S.N.</th>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Unit</th>
+            <th>Price</th>
+            <th>Amount</th>
           </tr>
         </thead>
         <tbody>
@@ -91,9 +81,8 @@ const EditableTable = () => {
               {Object.entries(row).map(([colKey, value]) => (
                 <td
                   key={colKey}
-                  onDoubleClick={() =>
-                    handleCellDoubleClick(rowIndex, colKey, value)
-                  }
+                  style={getCellStyle(rowIndex, colKey)}
+                  onClick={() => handleCellClick(rowIndex, colKey)}
                 >
                   {editingCell &&
                   editingCell.rowIndex === rowIndex &&
@@ -101,7 +90,7 @@ const EditableTable = () => {
                     <input
                       ref={inputRef}
                       type={colKey === "age" ? "number" : "text"}
-                      value={inputValue}
+                      value={value}
                       onChange={handleInputChange}
                       onBlur={saveEdit}
                       onKeyDown={handleKeyDown}

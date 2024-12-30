@@ -12,7 +12,7 @@ th, td {
     text-align: center;
     position: relative;
 }
-input[type="text"], input[type="number"] {
+/* input[type="text"], input[type="number"] {
     position: absolute;
     top: 0;
     left: 0;
@@ -22,4 +22,4 @@ input[type="text"], input[type="number"] {
     box-sizing: border-box;
     display: none;
     text-align: center;
-}
+} */
